@@ -1,0 +1,40 @@
+{
+  "name": "jest-puppeteer-performance-tester",
+  "version": "0.1.0",
+  "description": "Performance testing with Jest and Puppeteer",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "author": "Sassoun Derderian",
+  "license": "MIT",
+  "files": [
+    "build/"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "pretify": "prettier --write \"*.{json,js,yml,md}\" \"src/**/*\"",
+    "lint": "eslint src/**/*"
+  },
+  "dependencies": {},
+  "peerDependencies": {
+    "jest": "^25.4.0",
+    "jest-puppeteer": "^4.4.0",
+    "puppeteer": "^2.1.1"
+  },
+  "devDependencies": {
+    "@types/jest": "^25.2.1",
+    "@types/jest-environment-puppeteer": "^4.3.1",
+    "@types/puppeteer": "^2.0.1",
+    "@typescript-eslint/eslint-plugin": "^2.31.0",
+    "@typescript-eslint/parser": "^2.31.0",
+    "eslint": "^7.0.0",
+    "eslint-config-prettier": "^6.11.0",
+    "husky": "^4.2.5",
+    "jest": "^25.4.0",
+    "lint-staged": "^10.2.2",
+    "prettier": "^2.0.5",
+    "typescript": "^3.8.3"
+  },
+  "engines": {
+    "node": ">=10"
+  }
+}
