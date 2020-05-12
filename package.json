@@ -1,6 +1,6 @@
 {
   "name": "jest-puppeteer-performance-tester",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Performance testing with Jest and Puppeteer",
   "main": "build/index.js",
   "types": "build/index.d.ts",
