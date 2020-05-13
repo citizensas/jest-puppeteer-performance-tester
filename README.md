@@ -68,10 +68,10 @@ See the [exmaples](#examples) for better view.
 `MetricsMatcher` is a Function or a Tuple Array with the length of 1-3 which is passed to the Jest's `expect` function.
 There are three types of properties that the `.toMatchAverageMetrics` needs.
 
-1. <[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function)> The actual portion of the test, you want to run the performance against.
-2. `optional` <[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function)> A function where you can write a set of actions to reach the state of the page to be ready for the test to be repeated.
-3. `optional` <[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)> A set of options you may want to change.
-   - `repeats` <[Number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)> Indicated how many times you want your Test function to run. Defaults to 1.
+1. <[function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function)> The actual portion of the test, you want to run the performance against.
+2. `optional` <[function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function)> A function where you can write a set of actions to reach the state of the page to be ready for the test to be repeated.
+3. `optional` <[object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Objects)> A set of options you may want to change.
+   - `repeats` <[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)> Indicated how many times you want your Test function to run. Defaults to 1.
 
 Or you can just pass a function which will be considered as the first item of `MetricsMatcher` and the rest will work with their default behaviours.
 
@@ -81,6 +81,7 @@ Let's test the performance of the Google search bar typing speed
 
 ```typescript
 import { MetricsMatcher } from "jest-puppeteer-performance-tester"
+
 describe("Google Performance", () => {
   test("Types into the search bar", async () => {
     await page.goto("https://google.com", { waitUntil: "networkidle0" })

@@ -5,6 +5,10 @@
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "author": "Sassoun Derderian",
+  "repository": {
+    "type": "git",
+    "url": "github:citizensas/jest-puppeteer-performance-tester"
+  },
   "license": "MIT",
   "files": [
     "build/"
