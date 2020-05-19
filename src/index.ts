@@ -4,6 +4,8 @@ import {
   printExpected,
   printReceived,
   stringify,
+  RECEIVED_COLOR,
+  EXPECTED_COLOR,
 } from "jest-matcher-utils"
 
 declare global {
@@ -26,7 +28,9 @@ type TMatcherFunction = () => void
 interface MatcherOptions {
   repeats: number
 }
-type TMatcherTuple = [TMatcherFunction, TMatcherFunction?, MatcherOptions?]
+type TMatcherTuple =
+  | [TMatcherFunction, TMatcherFunction?, MatcherOptions?]
+  | [TMatcherFunction, MatcherOptions?]
 export type MetricsMatcher = TMatcherTuple | TMatcherFunction
 
 const METRICS = [
@@ -46,18 +50,23 @@ const METRICS = [
 ] as const
 
 class Metric {
-  private metrics = new Map<keyof Metrics, Set<number>>()
+  private metrics = new Map<keyof Metrics, number[]>()
+  private metricSize = 0
   constructor() {
     METRICS.forEach((metricName) => {
-      this.metrics.set(metricName, new Set())
+      this.metrics.set(metricName, [])
     })
   }
   add([startMetrics, endMetrics]: [Metrics, Metrics]): void {
     METRICS.forEach((metricName) => {
       this.metrics
         .get(metricName)!
-        .add(endMetrics[metricName] - startMetrics[metricName])
+        .push(endMetrics[metricName] - startMetrics[metricName])
     })
+    this.metricSize++
+  }
+  getMetricSize() {
+    return this.metricSize
   }
   getAverageMetrics(): Metrics {
     const result = {} as Metrics
@@ -66,10 +75,22 @@ class Metric {
     })
     return result
   }
-  static getAvgNumber(set: Set<number>): number {
+  getMetrics(): Record<keyof Metrics, number[]>
+  getMetrics(metricName: keyof Metrics): number[]
+  getMetrics(metricName?: keyof Metrics) {
+    if (metricName) {
+      return this.metrics.get(metricName)
+    }
+    const returnValue = {} as Record<keyof Metrics, number[]>
+    this.metrics.forEach((metricValues, metricName) => {
+      returnValue[metricName] = metricValues
+    })
+    return returnValue
+  }
+  static getAvgNumber(set: number[]): number {
     let avgNum = 0
     set.forEach((n) => (avgNum += n))
-    return avgNum / set.size
+    return avgNum / set.length
   }
 }
 
@@ -113,18 +134,34 @@ function getMatcherParameters(arg: MetricsMatcher): MatcherParams {
 }
 
 function analyzeResults(
-  actual: Metrics,
+  metric: Metric,
   expected: Partial<Metrics>
 ): { pass: boolean; message: () => string } {
   let pass = 1
+  const avgMetrics = metric.getAverageMetrics()
   const message = METRICS.filter(
     (metricName) => expected[metricName] !== undefined
   ).reduce((msg, metricName) => {
-    if (expected[metricName]! < actual[metricName]) {
+    if (expected[metricName]! < avgMetrics[metricName]) {
       msg += `   Expected ${printExpected(
         `${metricName} < ${expected[metricName]}`
       )}:\n`
-      msg += `   Received ${printReceived(actual[metricName])}\n\n`
+      msg += `   Received ${printReceived(avgMetrics[metricName].toFixed(5))}\n`
+      if (metric.getMetricSize() > 1) {
+        msg += `   All Metrics: `
+        msg +=
+          metric
+            .getMetrics(metricName)
+            .map((metricValue) => {
+              if (expected[metricName]! < metricValue) {
+                return RECEIVED_COLOR(metricValue.toFixed(3))
+              }
+              return EXPECTED_COLOR(metricValue.toFixed(3))
+            })
+            .join(" ") + `\n\n`
+      } else {
+        msg += `\n`
+      }
       pass = pass & 0
     }
     return msg
@@ -159,7 +196,6 @@ expect.extend({
       }
     }
 
-    const actual = metric.getAverageMetrics()
-    return analyzeResults(actual, expected)
+    return analyzeResults(metric, expected)
   },
 })
